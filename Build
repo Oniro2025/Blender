@@ -1,44 +1,4 @@
 import bpy
-import math
-
-# پاک‌سازی صحنه
-bpy.ops.object.select_all(action='SELECT')
-bpy.ops.object.delete(use_global=False)
-
-# ساخت ساختمان‌ها
-for i in range(-2, 3):
-    for j in range(5):
-        bpy.ops.mesh.primitive_cube_add(size=2, location=(i*3, j*4, 1))
-        cube = bpy.context.object
-        cube.scale.z = 2 + j % 3
-        mat = bpy.data.materials.new(name=f"Gray_{i}_{j}")
-        mat.diffuse_color = (0.3, 0.3, 0.3, 1)
-        cube.data.materials.append(mat)
-
-# خیابان وسط
-bpy.ops.mesh.primitive_plane_add(size=30, location=(0, 8, 0))
-road = bpy.context.object
-road_mat = bpy.data.materials.new(name="Road")
-road_mat.diffuse_color = (0.1, 0.1, 0.1, 1)
-road.data.materials.append(road_mat)
-road.scale.x = 0.4
-
-# دوربین و انیمیشن پایین اومدن
-bpy.ops.object.camera_add(location=(0, 8, 30), rotation=(math.radians(90), 0, 0))
-cam = bpy.context.object
-bpy.context.scene.camera = cam
-cam.keyframe_insert(data_path="location", frame=1)
-
-cam.location.z = 2
-cam.keyframe_insert(data_path="location", frame=100)
-
-# تنظیمات رندر عمودی
-scene = bpy.context.scene
-scene.render.resolution_x = 1080
-scene.render.resolution_y = 1920
-scene.frame_end = 100
-scene.frame_start = 1
-import bpy
 
 # پاک‌سازی صحنه قبلی
 bpy.ops.object.select_all(action='SELECT')
