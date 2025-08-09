@@ -1,46 +1,67 @@
 import bpy
 
-# پاک‌سازی صحنه قبلی
+# پاک‌سازی صحنه
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 
-# نورپردازی پایه‌ای
-bpy.ops.object.light_add(type='SUN', location=(0, 0, 10))
+# تابع ساخت قطعه استوانه‌ای
+def create_part(name, location, radius=0.2, depth=0.5, rotation=(0, 0, 0)):
+    bpy.ops.mesh.primitive_cylinder_add(
+        radius=radius,
+        depth=depth,
+        location=location,
+        rotation=rotation
+    )
+    part = bpy.context.object
+    part.name = name
+    return part
 
-# کف مغازه
-bpy.ops.mesh.primitive_plane_add(size=20, location=(0, 0, 0))
-floor = bpy.context.active_object
-floor.name = "Floor"
+# بدن اصلی و زره سینه
+torso = create_part("Torso", (0, 0, 1.4), 0.25, 0.8)
+chest_plate = create_part("ChestPlate", (0, 0, 1.5), 0.27, 0.4)
+belly_armor = create_part("BellyArmor", (0, 0, 1.2), 0.26, 0.4)
 
-# دیوارها (جعبه مغازه ساده)
-bpy.ops.mesh.primitive_cube_add(size=20, location=(0, 0, 10))
-walls = bpy.context.active_object
-walls.name = "Walls"
-walls.scale.z = 1
-walls.scale.x = 1
-walls.scale.y = 1
-walls.display_type = 'WIRE'
+# سر و کلاه‌خود
+bpy.ops.mesh.primitive_uv_sphere_add(radius=0.18, location=(0, 0, 1.9))
+head = bpy.context.object
+head.name = "Head"
 
-# ماکت کشتی (placeholder با مخروط)
-bpy.ops.mesh.primitive_cone_add(radius1=1, depth=2, location=(0, -2, 1))
-ship_model = bpy.context.active_object
-ship_model.name = "VictoriaModel"
+bpy.ops.mesh.primitive_uv_sphere_add(radius=0.2, location=(0, 0, 1.93))
+helmet = bpy.context.object
+helmet.name = "Helmet"
+helmet.scale[2] = 1.2
 
-# پیرمرد (بدن و سر ساده)
-bpy.ops.mesh.primitive_cube_add(location=(0, 2, 1))
-body = bpy.context.active_object
-body.name = "OldManBody"
-body.scale = (0.5, 0.3, 1.2)
+bpy.ops.mesh.primitive_cone_add(radius1=0.03, depth=0.4, location=(-0.12, 0, 2.1))
+horn1 = bpy.context.object
+bpy.ops.mesh.primitive_cone_add(radius1=0.03, depth=0.4, location=(0.12, 0, 2.1))
+horn2 = bpy.context.object
 
-bpy.ops.mesh.primitive_uv_sphere_add(location=(0, 2, 2.6))
-head = bpy.context.active_object
-head.name = "OldManHead"
-head.scale = (0.4, 0.4, 0.4)
+# کمربند
+belt = create_part("Belt", (0, 0, 1.0), 0.28, 0.1)
 
-# دوربین روبه‌روی پیرمرد
-cam_data = bpy.data.cameras.new(name="Camera")
-cam = bpy.data.objects.new("Camera", cam_data)
-bpy.context.collection.objects.link(cam)
-cam.location = (0, 6, 2)
-cam.rotation_euler = (1.3, 0, 3.1415)
-bpy.context.scene.camera = cam
+# دست‌ها و زره شانه‌ها
+left_arm = create_part("LeftArm", (-0.45, 0, 1.4), 0.08, 0.6, rotation=(0, 1.57, 0))
+right_arm = create_part("RightArm", (0.45, 0, 1.4), 0.08, 0.6, rotation=(0, 1.57, 0))
+
+left_shoulder = create_part("LeftShoulder", (-0.45, 0, 1.7), 0.12, 0.2)
+right_shoulder = create_part("RightShoulder", (0.45, 0, 1.7), 0.12, 0.2)
+
+# پاها و زره زانو
+left_leg = create_part("LeftLeg", (-0.15, 0, 0.6), 0.1, 0.9)
+right_leg = create_part("RightLeg", (0.15, 0, 0.6), 0.1, 0.9)
+
+left_knee = create_part("LeftKnee", (-0.15, 0, 0.2), 0.12, 0.15)
+right_knee = create_part("RightKnee", (0.15, 0, 0.2), 0.12, 0.15)
+
+# شمشیر
+bpy.ops.mesh.primitive_cube_add(size=0.05, location=(0, -0.25, 1.0))
+sword_handle = bpy.context.object
+sword_handle.name = "Sword_Handle"
+sword_handle.scale[2] = 4
+
+bpy.ops.mesh.primitive_cube_add(size=0.05, location=(0, -0.25, 1.2))
+guard = bpy.context.object
+guard.scale[0] = 3
+guard.name = "Sword_Guard"
+
+print("✅ Knight armor created with full detail!")
